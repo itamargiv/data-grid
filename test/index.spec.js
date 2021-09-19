@@ -286,5 +286,7 @@ describe('DataGrid', () => {
         );
     });
 
+    test.todo('maps grid rows');
+    test.todo('reduces grid rows');
     test.todo('retrieves filtered data by callback');
 });
