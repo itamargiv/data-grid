@@ -1,14 +1,16 @@
 class DataRow extends Map {
-    constructor(data){
+    constructor(data) {
         super(data);
     }
 
-    get cells(){
-        return Array.from(this)
-            .reduce((literal, [key, val]) => ({
+    get cells() {
+        return Array.from(this).reduce(
+            (literal, [key, val]) => ({
                 [key]: val,
-                ...literal
-            }), {});
+                ...literal,
+            }),
+            {}
+        );
     }
 }
 
@@ -18,26 +20,27 @@ class DataGrid {
     #collator = null;
     #locale;
 
-    constructor(data, locale = 'en'){
-        this.#grid = data && data.map(row => new DataRow(row)) || [];
-        this.#columns = this.#grid[0] && Array.from(this.#grid[0].keys()) || [];
+    constructor(data, locale = 'en') {
+        this.#grid = (data && data.map((row) => new DataRow(row))) || [];
+        this.#columns =
+            (this.#grid[0] && Array.from(this.#grid[0].keys())) || [];
 
         this.#locale = locale;
         this.#collator = new Intl.Collator(this.#locale, {
-            numeric: true
+            numeric: true,
         });
     }
 
     // TODO: Find a way to represent internal data of grid in a similar fashion to valueOf
-    get data(){
-        return this.#grid.map(row => row.cells);
+    get data() {
+        return this.#grid.map((row) => row.cells);
     }
 
-    #defaultSortFor(column, order){
+    #defaultSortFor(column, order) {
         return (a, b) => {
             const ordering = this.#collator.compare(a[column], b[column]);
             return order == 'desc' ? -ordering : ordering;
-        }
+        };
     }
 
     row(r) {
@@ -45,35 +48,35 @@ class DataGrid {
     }
 
     col(c) {
-        return this.#grid.map(row => row.get(c));
+        return this.#grid.map((row) => row.get(c));
     }
 
-    get(r,c){
+    get(r, c) {
         return this.#grid[r].get(c);
     }
 
-    sort(order = 'asc'){
+    sort(order = 'asc') {
         return this.data.sort(this.#defaultSortFor(this.#columns[0], order));
     }
 
-    sortWith(cb){
+    sortWith(cb) {
         return this.data.sort(cb);
     }
 
-    sortBy(column, order){
+    sortBy(column, order) {
         return this.sortWith(this.#defaultSortFor(column, order));
     }
 
-    sortByWith(column, cb){
+    sortByWith(column, cb) {
         return this.sortWith((a, b) => cb(a[column], b[column]));
     }
 
-    static fromObjects(data){
-        return new DataGrid(data.map(literal => Object.entries(literal)));
+    static fromObjects(data) {
+        return new DataGrid(data.map((literal) => Object.entries(literal)));
     }
 
-    static fromMaps(data){
-        return new DataGrid(data.map(rowMap => rowMap.entries()));
+    static fromMaps(data) {
+        return new DataGrid(data.map((rowMap) => rowMap.entries()));
     }
 }
 

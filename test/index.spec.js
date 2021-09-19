@@ -10,24 +10,30 @@ describe('DataGrid', () => {
     test.todo('instantiates from an array of arrays');
 
     it('instantiates from an array of tuple arrays', () => {
-        const fakeData = [[
-            ['phrase', 'Hello World'],
-            ['number', 42],
-        ]];
-        
+        const fakeData = [
+            [
+                ['phrase', 'Hello World'],
+                ['number', 42],
+            ],
+        ];
+
         const grid = new DataGrid(fakeData);
 
-        expect(grid.data).toEqual([{
-            phrase: 'Hello World',
-            number: 42
-        }]);
+        expect(grid.data).toEqual([
+            {
+                phrase: 'Hello World',
+                number: 42,
+            },
+        ]);
     });
 
     it('instantiates from array of object literals', () => {
-        const fakeData = [{
-            phrase: 'Hello World',
-            number: 42
-        }];
+        const fakeData = [
+            {
+                phrase: 'Hello World',
+                number: 42,
+            },
+        ];
 
         const grid = DataGrid.fromObjects(fakeData);
 
@@ -40,14 +46,14 @@ describe('DataGrid', () => {
             ['number', 42],
         ];
 
-        const expectedData = [{
-            phrase: 'Hello World',
-            number: 42
-        }];
-        
-        const grid = DataGrid.fromMaps([
-            new Map(fakeRow)
-        ]);
+        const expectedData = [
+            {
+                phrase: 'Hello World',
+                number: 42,
+            },
+        ];
+
+        const grid = DataGrid.fromMaps([new Map(fakeRow)]);
 
         expect(grid.data).toEqual(expectedData);
     });
@@ -55,17 +61,19 @@ describe('DataGrid', () => {
     test.todo('instantiates from a tuple array of tuple arrays');
     test.todo('instantiates from an object literal of object literals');
     test.todo('instantiates from a Map of Map instances');
-    
+
     it('retrieves row as object literal', () => {
-        const fakeData = [[
-            ['phrase', 'Hello World'],
-            ['number', 42],
-        ]];
+        const fakeData = [
+            [
+                ['phrase', 'Hello World'],
+                ['number', 42],
+            ],
+        ];
 
         const expected = {
             phrase: 'Hello World',
-            number: 42
-        }
+            number: 42,
+        };
 
         const grid = new DataGrid(fakeData);
 
@@ -74,20 +82,17 @@ describe('DataGrid', () => {
 
     it('retrieves column as array', () => {
         const fakeData = [
-            [ 
+            [
                 ['phrase', 'Hello World'],
-                ['number', 42], 
+                ['number', 42],
             ],
-            [ 
+            [
                 ['phrase', 'Goodbye Mars'],
                 ['number', 1986],
             ],
         ];
 
-        const expected = [
-            'Hello World',
-            'Goodbye Mars'
-        ];
+        const expected = ['Hello World', 'Goodbye Mars'];
 
         const grid = new DataGrid(fakeData);
 
@@ -96,11 +101,11 @@ describe('DataGrid', () => {
 
     it('retrieves cell data', () => {
         const fakeData = [
-            [ 
+            [
                 ['phrase', 'Hello World'],
-                ['number', 42], 
+                ['number', 42],
             ],
-            [ 
+            [
                 ['phrase', 'Goodbye Mars'],
                 ['number', 1986],
             ],
@@ -110,22 +115,22 @@ describe('DataGrid', () => {
 
         expect(grid.get(1, 'phrase')).toEqual('Goodbye Mars');
     });
-    
+
     it('sorts data', () => {
         const fakeData = [
-            [ 
+            [
                 ['phrase', 'Hello World'],
-                ['number', 42], 
+                ['number', 42],
             ],
-            [ 
+            [
                 ['phrase', 'Goodbye Mars'],
                 ['number', 1986],
             ],
-            [ 
+            [
                 ['phrase', 'So Long Venus'],
                 ['number', 1984],
             ],
-            [ 
+            [
                 ['phrase', 'Bonjour Mercury'],
                 ['number', 35],
             ],
@@ -139,19 +144,19 @@ describe('DataGrid', () => {
 
     it('sorts data descending', () => {
         const fakeData = [
-            [ 
+            [
                 ['phrase', 'Hello World'],
-                ['number', 42], 
+                ['number', 42],
             ],
-            [ 
+            [
                 ['phrase', 'Goodbye Mars'],
                 ['number', 1986],
             ],
-            [ 
+            [
                 ['phrase', 'So Long Venus'],
                 ['number', 1984],
             ],
-            [ 
+            [
                 ['phrase', 'Bonjour Mercury'],
                 ['number', 35],
             ],
@@ -165,19 +170,19 @@ describe('DataGrid', () => {
 
     it('sorts data with callback', () => {
         const fakeData = [
-            [ 
+            [
                 ['phrase', 'Hello World'],
-                ['number', 42], 
+                ['number', 42],
             ],
-            [ 
+            [
                 ['phrase', 'Goodbye Mars'],
                 ['number', 1986],
             ],
-            [ 
+            [
                 ['phrase', 'So Long Venus'],
                 ['number', 1984],
             ],
-            [ 
+            [
                 ['phrase', 'Bonjour Mercury'],
                 ['number', 35],
             ],
@@ -191,25 +196,25 @@ describe('DataGrid', () => {
 
     it('sorts data by column', () => {
         const fakeData = [
-            [ 
+            [
                 ['phrase', 'Hello World'],
                 ['number', 42],
-                ['isBoopy', true]
+                ['isBoopy', true],
             ],
-            [ 
+            [
                 ['phrase', 'Goodbye Mars'],
                 ['number', 1986],
-                ['isBoopy', false]
+                ['isBoopy', false],
             ],
-            [ 
+            [
                 ['phrase', 'So Long Venus'],
                 ['number', 1984],
-                ['isBoopy', false]
+                ['isBoopy', false],
             ],
-            [ 
+            [
                 ['phrase', 'Bonjour Mercury'],
                 ['number', 35],
-                ['isBoopy', true]
+                ['isBoopy', true],
             ],
         ];
 
@@ -221,25 +226,25 @@ describe('DataGrid', () => {
 
     it('sorts data by column descending', () => {
         const fakeData = [
-            [ 
+            [
                 ['phrase', 'Hello World'],
                 ['number', 42],
-                ['isBoopy', true]
+                ['isBoopy', true],
             ],
-            [ 
+            [
                 ['phrase', 'Goodbye Mars'],
                 ['number', 1986],
-                ['isBoopy', false]
+                ['isBoopy', false],
             ],
-            [ 
+            [
                 ['phrase', 'So Long Venus'],
                 ['number', 1984],
-                ['isBoopy', false]
+                ['isBoopy', false],
             ],
-            [ 
+            [
                 ['phrase', 'Bonjour Mercury'],
                 ['number', 35],
-                ['isBoopy', true]
+                ['isBoopy', true],
             ],
         ];
 
@@ -251,33 +256,34 @@ describe('DataGrid', () => {
 
     it('sorts data by column with callback', () => {
         const fakeData = [
-            [ 
+            [
                 ['phrase', 'Hello World'],
                 ['number', 42],
-                ['isBoopy', true]
+                ['isBoopy', true],
             ],
-            [ 
+            [
                 ['phrase', 'Goodbye Mars'],
                 ['number', 1986],
-                ['isBoopy', false]
+                ['isBoopy', false],
             ],
-            [ 
+            [
                 ['phrase', 'So Long Venus'],
                 ['number', 1984],
-                ['isBoopy', false]
+                ['isBoopy', false],
             ],
-            [ 
+            [
                 ['phrase', 'Bonjour Mercury'],
                 ['number', 35],
-                ['isBoopy', true]
+                ['isBoopy', true],
             ],
         ];
 
         const grid = new DataGrid(fakeData);
         const callback = (a, b) => -(a.isBoopy - b.isBoopy);
 
-        expect(grid.sortByWith('isBoopy', (a, b) => -(a-b)))
-            .toEqual(grid.data.sort(callback));
+        expect(grid.sortByWith('isBoopy', (a, b) => -(a - b))).toEqual(
+            grid.data.sort(callback)
+        );
     });
 
     test.todo('retrieves filtered data by callback');
