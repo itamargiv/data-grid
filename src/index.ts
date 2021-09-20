@@ -1,20 +1,30 @@
-class DataRow {
-    #columns = null;
-    #map = null;
+type Index = number | string;
+type Pair<a, b> = readonly [a, b];
+type KeyPair<Type> = Pair<Index, Type>;
+type KeyPairArray<Type> = readonly KeyPair<Type>[];
+type Order = 'asc' | 'desc';
+type Sorter<Type> = (a: Type, b: Type) => number;
+type Reducer<From, To> = (acc: To, val: From) => To;
 
-    constructor(data, columns = []) {
+type GridParams = [readonly any[][], readonly Index[]];
+
+class DataRow {
+    #columns: readonly Index[];
+    #map: ReadonlyMap<Index, any>;
+
+    constructor(data: readonly any[], columns: readonly Index[] = []) {
         this.#columns = columns;
-        const pairs = data.map((value, i) => [
+        const pairs = data.map((value: any, i: number) => [
             this.#columns[i] ? this.#columns[i] : i,
             value,
-        ]);
+        ]) as KeyPair<any>[];
 
         this.#map = new Map(pairs);
     }
 
-    get cells() {
+    get cells(): Object {
         return Array.from(this.#map).reduce(
-            (literal, [key, val]) => ({
+            (literal: Object, [key, val]: KeyPair<any>) => ({
                 [key]: val,
                 ...literal,
             }),
@@ -22,19 +32,23 @@ class DataRow {
         );
     }
 
-    get(c) {
+    get(c: Index) {
         return this.#map.get(c);
     }
 }
 
-class DataGrid {
-    #grid = null;
-    #columns = [];
-    #collator = null;
-    #locale;
+export default class DataGrid {
+    #grid: readonly DataRow[];
+    #columns: readonly Index[];
+    #collator: Intl.Collator;
+    #locale: string;
 
-    constructor(data = [], columns, locale = 'en') {
-        this.#grid = data.map((row) => new DataRow(row, columns));
+    constructor(
+        data: readonly any[][] = [],
+        columns: readonly Index[] = [],
+        locale: string = 'en'
+    ) {
+        this.#grid = data.map((row: any[]) => new DataRow(row, columns));
         this.#columns = columns;
         this.#locale = locale;
         this.#collator = new Intl.Collator(this.#locale, {
@@ -46,47 +60,50 @@ class DataGrid {
      * TODO: Find a way to represent internal data of grid in a similar fashion
      *       to valueOf
      */
-    get data() {
+    get data(): Object[] {
         return this.#grid.map((row) => row.cells);
     }
 
-    #defaultSortFor(column, order) {
+    #defaultSortFor(column: Index, order: Order): Sorter<Object> {
         return (a, b) => {
             const ordering = this.#collator.compare(a[column], b[column]);
             return order == 'desc' ? -ordering : ordering;
         };
     }
 
-    row(r) {
+    row(r: number): Object {
         return this.#grid[r].cells;
     }
 
-    col(c) {
+    col(c: Index): any[] {
         return this.#grid.map((row) => row.get(c));
     }
 
-    get(r, c) {
+    get(r: number, c: Index): any {
         return this.#grid[r].get(c);
     }
 
-    sort(order = 'asc') {
+    sort(order: Order = 'asc'): Object[] {
         return this.data.sort(this.#defaultSortFor(this.#columns[0], order));
     }
 
-    sortWith(cb) {
+    sortWith(cb: Sorter<Object>): Object[] {
         return this.data.sort(cb);
     }
 
-    sortBy(column, order) {
+    sortBy(column: Index, order: Order = 'asc'): Object[] {
         return this.sortWith(this.#defaultSortFor(column, order));
     }
 
-    sortByWith(column, cb) {
+    sortByWith(column: Index, cb: Sorter<any>): Object[] {
         return this.sortWith((a, b) => cb(a[column], b[column]));
     }
 
-    static fromPairs(data) {
-        const pairReducer = (acc, row) => {
+    static fromPairs(data: readonly KeyPairArray<any>[]): DataGrid {
+        const pairReducer: Reducer<KeyPairArray<any>, GridParams> = (
+            acc,
+            row
+        ) => {
             const headers = row.map((pair) => pair[0]);
             const values = row.map((pair) => pair[1]);
 
@@ -100,17 +117,15 @@ class DataGrid {
         return new DataGrid(...args);
     }
 
-    static fromObjects(data) {
+    static fromObjects(data: readonly Object[]): DataGrid {
         return DataGrid.fromPairs(
             data.map((literal) => Object.entries(literal))
         );
     }
 
-    static fromMaps(data) {
+    static fromMaps(data: ReadonlyMap<Index, any>[]): DataGrid {
         return DataGrid.fromPairs(
             data.map((rowMap) => Array.from(rowMap.entries()))
         );
     }
 }
-
-module.exports = DataGrid;
