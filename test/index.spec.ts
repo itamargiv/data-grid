@@ -1,4 +1,4 @@
-const DataGrid = require('../src');
+import DataGrid from '../src';
 
 describe('DataGrid', () => {
     it('instantiates', () => {
@@ -36,7 +36,7 @@ describe('DataGrid', () => {
                 ['phrase', 'Hello World'],
                 ['number', 42],
             ],
-        ];
+        ] as const;
 
         const grid = DataGrid.fromPairs(fakeData);
 
@@ -65,7 +65,7 @@ describe('DataGrid', () => {
         const fakeRow = [
             ['phrase', 'Hello World'],
             ['number', 42],
-        ];
+        ] as [any, any][];
 
         const expectedData = [
             {
@@ -82,6 +82,7 @@ describe('DataGrid', () => {
     test.todo('instantiates from a tuple array of tuple arrays');
     test.todo('instantiates from an object literal of object literals');
     test.todo('instantiates from a Map of Map instances');
+    test.todo('throws a TypeError on any unaccepted type');
 
     it('retrieves row as object literal', () => {
         const fakeData = [['Hello World', 42]];
