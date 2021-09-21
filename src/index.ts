@@ -1,29 +1,32 @@
 type Index = number | string;
+
 type Pair<a, b> = readonly [a, b];
 type KeyPair<Type> = Pair<Index, Type>;
 type KeyPairArray<Type> = readonly KeyPair<Type>[];
+
 type Order = 'asc' | 'desc';
+
 type Sorter<Type> = (a: Type, b: Type) => number;
 type Reducer<From, To> = (acc: To, val: From) => To;
 
-type GridParams = [readonly any[][], readonly Index[]];
+type Row = ReadonlyMap<Index, any> | DataRow;
+type Grid = ReadonlyMap<Index, Row> | DataGrid;
 
 class DataRow {
     #columns: readonly Index[];
-    #map: ReadonlyMap<Index, any>;
+    #row: ReadonlyMap<Index, any>;
 
-    constructor(data: readonly any[], columns: readonly Index[] = []) {
-        this.#columns = columns;
-        const pairs = data.map((value: any, i: number) => [
-            this.#columns[i] ? this.#columns[i] : i,
-            value,
-        ]) as KeyPair<any>[];
+    constructor(row: Row) {
+        this.#row = new Map(row.entries());
+        this.#columns = Array.from(this.#row.keys());
+    }
 
-        this.#map = new Map(pairs);
+    get columns(): readonly Index[] {
+        return this.#columns;
     }
 
     get cells(): Object {
-        return Array.from(this.#map).reduce(
+        return Array.from(this.#row).reduce(
             (literal: Object, [key, val]: KeyPair<any>) => ({
                 [key]: val,
                 ...literal,
@@ -32,24 +35,36 @@ class DataRow {
         );
     }
 
-    get(c: Index) {
-        return this.#map.get(c);
+    entries(): KeyPairArray<any> {
+        return Array.from(this.#row.entries());
+    }
+
+    get(c: Index): any {
+        return this.#row.get(c);
+    }
+
+    static fromArray(
+        data: readonly any[],
+        columns: readonly Index[] = []
+    ): DataRow {
+        const pairs = data.map((value: any, i: number) => [
+            columns[i] ? columns[i] : i,
+            value,
+        ]) as KeyPairArray<any>;
+
+        return new DataRow(new Map(pairs));
     }
 }
 
 export default class DataGrid {
-    #grid: readonly DataRow[];
+    #grid: ReadonlyMap<Index, DataRow>;
     #columns: readonly Index[];
     #collator: Intl.Collator;
     #locale: string;
 
-    constructor(
-        data: readonly any[][] = [],
-        columns: readonly Index[] = [],
-        locale: string = 'en'
-    ) {
-        this.#grid = data.map((row: any[]) => new DataRow(row, columns));
-        this.#columns = columns;
+    constructor(grid: Grid = new Map(), locale: string = 'en') {
+        this.#grid = new Map(this.#parseRows(grid));
+        this.#columns = Array.from(this.#parseColumns());
         this.#locale = locale;
         this.#collator = new Intl.Collator(this.#locale, {
             numeric: true,
@@ -61,7 +76,27 @@ export default class DataGrid {
      *       to valueOf
      */
     get data(): Object[] {
-        return this.#grid.map((row) => row.cells);
+        return Array.from(this.#grid).map(([_, row]) => row.cells);
+    }
+
+    #parseColumns(): ReadonlySet<Index> {
+        const columnsReducer: Reducer<DataRow, Set<Index>> = (columns, row) => {
+            row.columns.forEach((column) => columns.add(column));
+
+            return columns;
+        };
+
+        return Array.from(this.#grid.values()).reduce(
+            columnsReducer,
+            new Set()
+        );
+    }
+
+    #parseRows(map: Grid): KeyPairArray<DataRow> {
+        return Array.from(map.entries()).map(([key, value]) => [
+            key,
+            new DataRow(value),
+        ]);
     }
 
     #defaultSortFor(column: Index, order: Order): Sorter<Object> {
@@ -71,16 +106,20 @@ export default class DataGrid {
         };
     }
 
-    row(r: number): Object {
-        return this.#grid[r].cells;
+    row(r: Index): Object {
+        return this.#grid.get(r).cells;
     }
 
     col(c: Index): any[] {
-        return this.#grid.map((row) => row.get(c));
+        return Array.from(this.#grid.values()).map((row) => row.get(c));
     }
 
     get(r: number, c: Index): any {
-        return this.#grid[r].get(c);
+        return this.#grid.get(r).get(c);
+    }
+
+    entries(): KeyPairArray<any> {
+        return Array.from(this.#grid).map(([key, row]) => [key, row.entries()]);
     }
 
     sort(order: Order = 'asc'): Object[] {
@@ -99,33 +138,34 @@ export default class DataGrid {
         return this.sortWith((a, b) => cb(a[column], b[column]));
     }
 
+    static fromArray(
+        data: readonly any[][],
+        columns: readonly Index[] = []
+    ): DataGrid {
+        const map = new Map(
+            data.map((row, i) => [i, DataRow.fromArray(row, columns)])
+        );
+
+        return new DataGrid(map);
+    }
+
     static fromPairs(data: readonly KeyPairArray<any>[]): DataGrid {
-        const pairReducer: Reducer<KeyPairArray<any>, GridParams> = (
-            acc,
-            row
-        ) => {
-            const headers = row.map((pair) => pair[0]);
-            const values = row.map((pair) => pair[1]);
+        const grid = new Map(data.map((pairs, i) => [i, new Map(pairs)]));
 
-            return [
-                acc[0].concat([values]),
-                acc[1].length < headers.length ? headers : acc[1],
-            ];
-        };
-
-        const args = data.reduce(pairReducer, [[], []]);
-        return new DataGrid(...args);
+        return new DataGrid(grid);
     }
 
     static fromObjects(data: readonly Object[]): DataGrid {
-        return DataGrid.fromPairs(
-            data.map((literal) => Object.entries(literal))
+        const grid = new Map(
+            data.map((literal, i) => [i, new Map(Object.entries(literal))])
         );
+
+        return new DataGrid(grid);
     }
 
     static fromMaps(data: ReadonlyMap<Index, any>[]): DataGrid {
-        return DataGrid.fromPairs(
-            data.map((rowMap) => Array.from(rowMap.entries()))
-        );
+        const grid = new Map(data.map((map, i) => [i, map]));
+
+        return new DataGrid(grid);
     }
 }

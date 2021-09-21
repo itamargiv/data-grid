@@ -25,64 +25,115 @@ describe('DataGrid', () => {
             )
         );
 
-        const grid = new DataGrid(fakeData);
+        const grid = DataGrid.fromArray(fakeData);
 
         expect(grid.data).toEqual(expected);
     });
 
-    it('instantiates from an array of pair arrays', () => {
-        const fakeData = [
-            [
-                ['phrase', 'Hello World'],
-                ['number', 42],
+    describe.each([
+        {
+            data: 'two dimensional array and column array',
+            method: 'fromArray',
+            given: [
+                [
+                    ['Hello World', 42, true],
+                    ['Goodbye Mars', 1986, false],
+                ],
+                ['phrase', 'number', 'isBoopy'],
             ],
-        ] as const;
+        },
+        {
+            data: 'array of pair arrays',
+            method: 'fromPairs',
+            given: [
+                [
+                    [
+                        ['phrase', 'Hello World'],
+                        ['number', 42],
+                        ['isBoopy', true],
+                    ],
+                    [
+                        ['phrase', 'Goodbye Mars'],
+                        ['number', 1986],
+                        ['isBoopy', false],
+                    ],
+                ],
+            ],
+        },
+        {
+            data: 'array of object literals',
+            method: 'fromObjects',
+            given: [
+                [
+                    {
+                        phrase: 'Hello World',
+                        number: 42,
+                        isBoopy: true,
+                    },
+                    {
+                        phrase: 'Goodbye Mars',
+                        number: 1986,
+                        isBoopy: false,
+                    },
+                ],
+            ],
+        },
+        {
+            data: 'array of Map instances',
+            method: 'fromMaps',
+            given: [
+                [
+                    new Map([
+                        ['phrase', 'Hello World'],
+                        ['number', 42],
+                        ['isBoopy', true],
+                    ] as [any, any][]),
+                    new Map([
+                        ['phrase', 'Goodbye Mars'],
+                        ['number', 1986],
+                        ['isBoopy', false],
+                    ] as [any, any][]),
+                ],
+            ],
+        },
+    ])('instantiates from:', ({ data, method, given }) => {
+        test(data, () => {
+            const grid = DataGrid[method](...given);
 
-        const grid = DataGrid.fromPairs(fakeData);
-
-        expect(grid.data).toEqual([
-            {
-                phrase: 'Hello World',
-                number: 42,
-            },
-        ]);
-    });
-
-    it('instantiates from array of object literals', () => {
-        const fakeData = [
-            {
-                phrase: 'Hello World',
-                number: 42,
-            },
-        ];
-
-        const grid = DataGrid.fromObjects(fakeData);
-
-        expect(grid.data).toEqual(fakeData);
-    });
-
-    it('instantiates from array of Map instances', () => {
-        const fakeRow = [
-            ['phrase', 'Hello World'],
-            ['number', 42],
-        ] as [any, any][];
-
-        const expectedData = [
-            {
-                phrase: 'Hello World',
-                number: 42,
-            },
-        ];
-
-        const grid = DataGrid.fromMaps([new Map(fakeRow)]);
-
-        expect(grid.data).toEqual(expectedData);
+            expect(grid.data).toEqual([
+                {
+                    phrase: 'Hello World',
+                    number: 42,
+                    isBoopy: true,
+                },
+                {
+                    phrase: 'Goodbye Mars',
+                    number: 1986,
+                    isBoopy: false,
+                },
+            ]);
+        });
     });
 
     test.todo('instantiates from a tuple array of tuple arrays');
     test.todo('instantiates from an object literal of object literals');
     test.todo('instantiates from a Map of Map instances');
     test.todo('throws a TypeError on any unaccepted type');
+
+    it('retrieves entries as an iterator', () => {
+        const fakeData = [['Hello World', 42]];
+        const grid = DataGrid.fromArray(fakeData, ['phrase', 'number']);
+
+        expect(Array.from(grid.entries())).toEqual([
+            [
+                0,
+                [
+                    ['phrase', 'Hello World'],
+                    ['number', 42],
+                ],
+            ],
+        ]);
+    });
 
     it('retrieves row as object literal', () => {
         const fakeData = [['Hello World', 42]];
@@ -92,7 +143,7 @@ describe('DataGrid', () => {
             number: 42,
         };
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number']);
+        const grid = DataGrid.fromArray(fakeData, ['phrase', 'number']);
 
         expect(grid.row(0)).toEqual(expected);
     });
@@ -105,7 +156,7 @@ describe('DataGrid', () => {
 
         const expected = ['Hello World', 'Goodbye Mars'];
 
-        const grid = new DataGrid(fakeData, ['phrase']);
+        const grid = DataGrid.fromArray(fakeData, ['phrase']);
 
         expect(grid.col('phrase')).toEqual(expected);
     });
@@ -116,94 +167,133 @@ describe('DataGrid', () => {
             ['Goodbye Mars', 1986],
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number']);
+        const grid = DataGrid.fromArray(fakeData, ['phrase', 'number']);
 
         expect(grid.get(1, 'phrase')).toEqual('Goodbye Mars');
     });
 
     it('sorts data', () => {
         const fakeData = [
-            ['Hello World', 42, true],
-            ['Goodbye Mars', 1986, false],
-            ['So Long Venus', 1984, false],
-            ['Bonjour Mercury', 35, true],
+            {
+                phrase: 'Hello World',
+                number: 42,
+                isBoopy: true,
+            },
+            {
+                phrase: 'Goodbye Mars',
+                number: 1986,
+                isBoopy: false,
+            },
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromObjects(fakeData);
+
         const callback = (a, b) => a.phrase.localeCompare(b.phrase);
 
-        expect(grid.sort()).toEqual(grid.data.sort(callback));
+        expect(grid.sort()).toEqual(fakeData.sort(callback));
     });
 
     it('sorts data descending', () => {
         const fakeData = [
-            ['Hello World', 42, true],
-            ['Goodbye Mars', 1986, false],
-            ['So Long Venus', 1984, false],
-            ['Bonjour Mercury', 35, true],
+            {
+                phrase: 'Hello World',
+                number: 42,
+                isBoopy: true,
+            },
+            {
+                phrase: 'Goodbye Mars',
+                number: 1986,
+                isBoopy: false,
+            },
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromObjects(fakeData);
+
         const callback = (a, b) => -a.phrase.localeCompare(b.phrase);
 
-        expect(grid.sort('desc')).toEqual(grid.data.sort(callback));
+        expect(grid.sort('desc')).toEqual(fakeData.sort(callback));
     });
 
     it('sorts data with callback', () => {
         const fakeData = [
-            ['Hello World', 42, true],
-            ['Goodbye Mars', 1986, false],
-            ['So Long Venus', 1984, false],
-            ['Bonjour Mercury', 35, true],
+            {
+                phrase: 'Hello World',
+                number: 42,
+                isBoopy: true,
+            },
+            {
+                phrase: 'Goodbye Mars',
+                number: 1986,
+                isBoopy: false,
+            },
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromObjects(fakeData);
+
         const callback = (a, b) => a.number - b.number;
 
-        expect(grid.sortWith(callback)).toEqual(grid.data.sort(callback));
+        expect(grid.sortWith(callback)).toEqual(fakeData.sort(callback));
     });
 
     it('sorts data by column', () => {
         const fakeData = [
-            ['Hello World', 42, true],
-            ['Goodbye Mars', 1986, false],
-            ['So Long Venus', 1984, false],
-            ['Bonjour Mercury', 35, true],
+            {
+                phrase: 'Hello World',
+                number: 42,
+                isBoopy: true,
+            },
+            {
+                phrase: 'Goodbye Mars',
+                number: 1986,
+                isBoopy: false,
+            },
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromObjects(fakeData);
         const callback = (a, b) => a.number - b.number;
 
-        expect(grid.sortBy('number')).toEqual(grid.data.sort(callback));
+        expect(grid.sortBy('number')).toEqual(fakeData.sort(callback));
     });
 
     it('sorts data by column descending', () => {
         const fakeData = [
-            ['Hello World', 42, true],
-            ['Goodbye Mars', 1986, false],
-            ['So Long Venus', 1984, false],
-            ['Bonjour Mercury', 35, true],
+            {
+                phrase: 'Hello World',
+                number: 42,
+                isBoopy: true,
+            },
+            {
+                phrase: 'Goodbye Mars',
+                number: 1986,
+                isBoopy: false,
+            },
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromObjects(fakeData);
         const callback = (a, b) => -(a.number - b.number);
 
-        expect(grid.sortBy('number', 'desc')).toEqual(grid.data.sort(callback));
+        expect(grid.sortBy('number', 'desc')).toEqual(fakeData.sort(callback));
     });
 
     it('sorts data by column with callback', () => {
         const fakeData = [
-            ['Hello World', 42, true],
-            ['Goodbye Mars', 1986, false],
-            ['So Long Venus', 1984, false],
-            ['Bonjour Mercury', 35, true],
+            {
+                phrase: 'Hello World',
+                number: 42,
+                isBoopy: true,
+            },
+            {
+                phrase: 'Goodbye Mars',
+                number: 1986,
+                isBoopy: false,
+            },
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromObjects(fakeData);
         const callback = (a, b) => -(a.isBoopy - b.isBoopy);
 
         expect(grid.sortByWith('isBoopy', (a, b) => -(a - b))).toEqual(
-            grid.data.sort(callback)
+            fakeData.sort(callback)
         );
     });
 
