@@ -120,7 +120,7 @@ describe('DataGrid', () => {
     test.todo('instantiates from a Map of Map instances');
     test.todo('throws a TypeError on any unaccepted type');
 
-    it('retrieves entries as an iterator', () => {
+    it('retrieves entries as an array of pairs', () => {
         const fakeData = [['Hello World', 42]];
         const grid = DataGrid.fromArray(fakeData, ['phrase', 'number']);
 
