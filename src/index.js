@@ -70,7 +70,7 @@ class DataRow {
     }
 }
 
-class DataGrid {
+export default class DataGrid {
     /**
      * @type {DataRow[]}
      */
@@ -266,5 +266,3 @@ class DataGrid {
         );
     }
 }
-
-module.exports = DataGrid;

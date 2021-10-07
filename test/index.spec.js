@@ -1,4 +1,4 @@
-const DataGrid = require('../src');
+import DataGrid from '../src';
 
 describe('DataGrid', () => {
     it('instantiates', () => {
@@ -30,7 +30,7 @@ describe('DataGrid', () => {
         expect(grid.data).toEqual(expected);
     });
 
-    it('instantiates from an array of pair arrays', () => {
+    xit('instantiates from an array of pair arrays', () => {
         const fakeData = [
             [
                 ['phrase', 'Hello World'],
@@ -61,7 +61,7 @@ describe('DataGrid', () => {
         expect(grid.data).toEqual(fakeData);
     });
 
-    it('instantiates from array of Map instances', () => {
+    xit('instantiates from array of Map instances', () => {
         const fakeRow = [
             ['phrase', 'Hello World'],
             ['number', 42],
@@ -78,10 +78,6 @@ describe('DataGrid', () => {
 
         expect(grid.data).toEqual(expectedData);
     });
-
-    test.todo('instantiates from a tuple array of tuple arrays');
-    test.todo('instantiates from an object literal of object literals');
-    test.todo('instantiates from a Map of Map instances');
 
     it('retrieves row as object literal', () => {
         const fakeData = [['Hello World', 42]];
