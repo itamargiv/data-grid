@@ -30,24 +30,6 @@ describe('DataGrid', () => {
         expect(grid.data).toEqual(expected);
     });
 
-    xit('instantiates from an array of pair arrays', () => {
-        const fakeData = [
-            [
-                ['phrase', 'Hello World'],
-                ['number', 42],
-            ],
-        ];
-
-        const grid = DataGrid.fromPairs(fakeData);
-
-        expect(grid.data).toEqual([
-            {
-                phrase: 'Hello World',
-                number: 42,
-            },
-        ]);
-    });
-
     it('instantiates from array of object literals', () => {
         const fakeData = [
             {
@@ -59,24 +41,6 @@ describe('DataGrid', () => {
         const grid = DataGrid.fromObjects(fakeData);
 
         expect(grid.data).toEqual(fakeData);
-    });
-
-    xit('instantiates from array of Map instances', () => {
-        const fakeRow = [
-            ['phrase', 'Hello World'],
-            ['number', 42],
-        ];
-
-        const expectedData = [
-            {
-                phrase: 'Hello World',
-                number: 42,
-            },
-        ];
-
-        const grid = DataGrid.fromMaps([new Map(fakeRow)]);
-
-        expect(grid.data).toEqual(expectedData);
     });
 
     it('retrieves row as object literal', () => {

@@ -100,7 +100,7 @@ export default class DataGrid {
      * @param {string} locale A string representing a language locale, such as
      *                        `he`, `fr` or `en-GB`
      */
-    constructor(data = [], columns, locale = 'en') {
+    constructor(data = [], columns = [], locale = 'en') {
         this.#grid = data.map((row) => new DataRow(row, columns));
         this.#columns = columns;
         this.#locale = locale;
@@ -212,35 +212,6 @@ export default class DataGrid {
     }
 
     /**
-     * Instantiates a data grid from a two dimensional array of key value pairs
-     *
-     * @param {KeyedValue[][]} data A two dimensional array of arrays of key
-     *                              value pairs
-     * @returns DataGrid
-     */
-    static fromPairs(data) {
-        /**
-         * Reduces key value pairs into DataGrid constructor arguments
-         *
-         * @param {[any[][], Index[]]} acc A pair of
-         * @param {KeyedValue[]} row
-         * @returns {[any[][], Index[]]}
-         */
-        const pairReducer = (acc, row) => {
-            const headers = row.map((pair) => pair[0]);
-            const values = row.map((pair) => pair[1]);
-
-            return [
-                acc[0].concat([values]),
-                acc[1].length < headers.length ? headers : acc[1],
-            ];
-        };
-
-        const args = data.reduce(pairReducer, [[], []]);
-        return new DataGrid(...args);
-    }
-
-    /**
      * Instantiates a data grid from an array of object literals
      *
      * @param {Object[]} data An array of objects where the object keys
@@ -248,20 +219,20 @@ export default class DataGrid {
      * @returns DataGrid
      */
     static fromObjects(data) {
-        return DataGrid.fromPairs(
-            data.map((literal) => Object.entries(literal))
-        );
-    }
+        const args = data.reduce(
+            (args, literal) => {
+                const [grid, cols] = args;
+                const headers = Object.keys(literal);
+                const values = Object.values(literal);
 
-    /**
-     * Instantiates from an array of ES6 Maps.
-     *
-     * @param {ReadonlyMap<Index, any>[]} data An array of maps
-     * @returns DataGrid
-     */
-    static fromMaps(data) {
-        return DataGrid.fromPairs(
-            data.map((rowMap) => Array.from(rowMap.entries()))
+                return [
+                    [...grid, values],
+                    Array.from(new Set(cols.concat(headers))),
+                ];
+            },
+            [[], []]
         );
+
+        return new DataGrid(...args);
     }
 }
