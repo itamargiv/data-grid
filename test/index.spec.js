@@ -115,8 +115,9 @@ describe('DataGrid', () => {
 
         const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
         const callback = (a, b) => a.phrase.localeCompare(b.phrase);
+        const sorted = grid.sort();
 
-        expect(grid.sort()).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data descending', () => {
@@ -129,8 +130,9 @@ describe('DataGrid', () => {
 
         const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
         const callback = (a, b) => -a.phrase.localeCompare(b.phrase);
+        const sorted = grid.sort('desc');
 
-        expect(grid.sort('desc')).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data with callback', () => {
@@ -143,8 +145,9 @@ describe('DataGrid', () => {
 
         const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
         const callback = (a, b) => a.number - b.number;
+        const sorted = grid.sortWith(callback);
 
-        expect(grid.sortWith(callback)).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data by column', () => {
@@ -157,8 +160,9 @@ describe('DataGrid', () => {
 
         const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
         const callback = (a, b) => a.number - b.number;
+        const sorted = grid.sortBy('number');
 
-        expect(grid.sortBy('number')).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data by column descending', () => {
@@ -171,8 +175,9 @@ describe('DataGrid', () => {
 
         const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
         const callback = (a, b) => -(a.number - b.number);
+        const sorted = grid.sortBy('number', 'desc');
 
-        expect(grid.sortBy('number', 'desc')).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data by column with callback', () => {
@@ -185,10 +190,9 @@ describe('DataGrid', () => {
 
         const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
         const callback = (a, b) => -(a.isBoopy - b.isBoopy);
+        const sorted = grid.sortByWith('isBoopy', (a, b) => -(a - b));
 
-        expect(grid.sortByWith('isBoopy', (a, b) => -(a - b))).toEqual(
-            grid.data.sort(callback)
-        );
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('maps grid rows', () => {

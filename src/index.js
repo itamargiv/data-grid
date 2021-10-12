@@ -176,43 +176,43 @@ export default class DataGrid {
      * for the first column.
      *
      * @param {Order} order The order in which to sort by
-     * @returns {Row[]}
+     * @returns {DataGrid}
      */
     sort(order = ORDER.ASC) {
         return this.sortWith(this.#defaultSortFor(this.#columns[0], order));
     }
 
     /**
-     * Returns the data of the grid, as sorted by a given sorting function.
+     * Returns a new grid, sorted by a given sorting function.
      *
      * @param {(a: any, b: any) => number} cb A callback to determine the sort
      *                                        order of two values in the grid
-     * @returns {Row[]}
+     * @returns {DataGrid}
      */
     sortWith(cb) {
-        return this.data.sort(cb);
+        return DataGrid.fromObjects(this.data.sort(cb));
     }
 
     /**
-     * Returns the data of the grid, as sorted by a given column with the
+     * Returns a new grid, sorted by a given column with the
      * default sorting function.
      *
      * @param {Index} column A column to sort the data by
      * @param {Order} order The order in which to sort by
-     * @returns {Row[]}
+     * @returns {DataGrid}
      */
     sortBy(column, order) {
         return this.sortWith(this.#defaultSortFor(column, order));
     }
 
     /**
-     * Returns the data of the grid, as sorted by a given column with the
+     * Returns a new grid, sorted by a given column with the
      * provided sorting function.
      *
      * @param {Index} column A column to sort the data by
      * @param {(a: any, b: any) => number} cb A callback to determine the sort
      *                                        order of two values in the grid
-     * @returns {Row[]}
+     * @returns {DataGrid}
      */
     sortByWith(column, cb) {
         return this.sortWith((a, b) => cb(a[column], b[column]));
