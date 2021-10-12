@@ -10,11 +10,6 @@ import { ORDER } from './types';
 
 class DataRow {
     /**
-     * @type {Index[]}
-     */
-    #columns;
-
-    /**
      * @type {ReadonlyMap<Index, any>}
      */
     #map;
@@ -23,19 +18,14 @@ class DataRow {
      * DataRow represents a row of data in a data grid.
      * Each piece of data is keyed by it's respective column header.
      *
-     * @param {any[]} data An array of the row's data
-     * @param {Index[]} columns An array of column headers
+     * @param {Row} data An object literal where the object keys represent the
+     *                   grid columns
      */
-    constructor(data, columns = []) {
-        this.#columns = columns;
-
+    constructor(data) {
         /**
          * @type {Iterable<KeyedValue>}
          */
-        const pairs = data.map((value, i) => [
-            this.#columns[i] ? this.#columns[i] : i,
-            value,
-        ]);
+        const pairs = Object.keys(data).map((key) => [key, data[key]]);
 
         this.#map = new Map(pairs);
     }
@@ -92,14 +82,21 @@ export default class DataGrid {
      * in the same fashion as arrays. i.e. a grid that can be sorted, filtered,
      * mapped and reduced.
      *
-     * @param {any[][]} data A two dimensional array containing values per row
-     * @param {Index[]} columns An array of column headers
+     * @param {Row[]} data An array of object literals where the object keys
+     *                        represent the grid columns
      * @param {string} locale A string representing a language locale, such as
      *                        `he`, `fr` or `en-GB`
      */
-    constructor(data = [], columns = [], locale = 'en') {
-        this.#grid = data.map((row) => new DataRow(row, columns));
-        this.#columns = columns;
+    constructor(data = [], locale = 'en') {
+        this.#columns = data
+            .map(Object.keys)
+            .reduce(
+                (columns, keys) => Array.from(new Set(columns.concat(keys))),
+                []
+            );
+
+        this.#grid = data.map((row) => new DataRow(row));
+
         this.#locale = locale;
         this.#collator = new Intl.Collator(this.#locale, {
             numeric: true,
@@ -168,7 +165,7 @@ export default class DataGrid {
      * @returns {DataGrid}
      */
     map(cb) {
-        return DataGrid.fromObjects(this.data.map(cb));
+        return new DataGrid(this.data.map(cb));
     }
 
     /**
@@ -190,7 +187,7 @@ export default class DataGrid {
      * @returns {DataGrid}
      */
     sortWith(cb) {
-        return DataGrid.fromObjects(this.data.sort(cb));
+        return new DataGrid(this.data.sort(cb));
     }
 
     /**
@@ -219,26 +216,22 @@ export default class DataGrid {
     }
 
     /**
-     * Instantiates a data grid from an array of object literals
+     * Instantiates a data grid from a two dimensional array
      *
-     * @param {Object[]} data An array of objects where the object keys
-     *                        represent the grid columns
-     * @returns DataGrid
+     * @param {any[][]} data A two dimensional array containing values per row
+     * @param {Index[]} columns An array of column headers
      */
-    static fromObjects(data) {
-        const args = data.reduce(
-            ([grid, cols], literal) => {
-                const headers = Object.keys(literal);
-                const values = Object.values(literal);
-
-                return [
-                    [...grid, values],
-                    Array.from(new Set(cols.concat(headers))),
-                ];
-            },
-            [[], []]
+    static fromArray(data = [], columns = []) {
+        const args = data.map((row) =>
+            row.reduce(
+                (literal, value, i) => ({
+                    ...literal,
+                    [columns[i] || i]: value,
+                }),
+                {}
+            )
         );
 
-        return new DataGrid(...args);
+        return new DataGrid(args);
     }
 }
