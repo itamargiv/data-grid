@@ -180,7 +180,7 @@ export default class DataGrid {
      *
      * @param {(a: any, b: any) => number} cb A callback to determine the sort
      *                                        order of two values in the grid
-     * @returns
+     * @returns {Row[]}
      */
     sortWith(cb) {
         return this.data.sort(cb);

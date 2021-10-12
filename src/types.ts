@@ -11,7 +11,7 @@ export const ORDER = {
 
 export type Index = string | number;
 
-type Pair<a, b> = [a, b];
+type Pair<a, b> = readonly [a, b];
 export type Keyed<T> = Pair<Index, T>;
 
 export interface Row {
