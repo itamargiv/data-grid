@@ -30,6 +30,31 @@ describe('DataGrid', () => {
         expect(grid.data).toEqual(expected);
     });
 
+    it('instantiates from an array of arrays with column names', () => {
+        const fakeData = [
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
+        ];
+
+        const fakeColumns = ['phrase', 'number', 'isBoopy'];
+
+        const expected = fakeData.map((row) =>
+            row.reduce(
+                (literal, value, i) => ({
+                    ...literal,
+                    [fakeColumns[i]]: value,
+                }),
+                {}
+            )
+        );
+
+        const grid = new DataGrid(fakeData, fakeColumns);
+
+        expect(grid.data).toEqual(expected);
+    });
+
     it('instantiates from array of object literals', () => {
         const fakeData = [
             {
