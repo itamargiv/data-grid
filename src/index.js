@@ -15,12 +15,12 @@ class DataRow {
     /**
      * @type {Index[]}
      */
-    #columns = null;
+    #columns;
 
     /**
      * @type {ReadonlyMap<Index, any>}
      */
-    #map = null;
+    #map;
 
     /**
      * DataRow represents a row of data in a data grid.
@@ -73,17 +73,17 @@ export default class DataGrid {
     /**
      * @type {DataRow[]}
      */
-    #grid = null;
+    #grid;
 
     /**
      * @type {Index[]}
      */
-    #columns = [];
+    #columns;
 
     /**
      * @type {Intl.Collator}
      */
-    #collator = null;
+    #collator;
 
     /**
      * @type {string}
