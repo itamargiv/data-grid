@@ -191,7 +191,24 @@ describe('DataGrid', () => {
         );
     });
 
-    test.todo('maps grid rows');
+    it('maps grid rows', () => {
+        const fakeData = [
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
+        ];
+
+        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const callback = (row) => ({
+            ...row,
+            phrase: row.phrase + '!',
+        });
+        const mapped = grid.map(callback);
+
+        expect(mapped.data).toEqual(grid.data.map(callback));
+    });
+
     test.todo('reduces grid rows');
     test.todo('retrieves filtered data by callback');
 });

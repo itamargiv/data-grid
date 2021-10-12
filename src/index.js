@@ -162,6 +162,16 @@ export default class DataGrid {
     }
 
     /**
+     * Maps the grid by it's rows, and returns a new DataGrid with mapped data
+     *
+     * @param {(Row) => Row} cb A callback to map each row to a new row
+     * @returns {DataGrid}
+     */
+    map(cb) {
+        return DataGrid.fromObjects(this.data.map(cb));
+    }
+
+    /**
      * Returns the data of the grid, sorted by a given order
      * for the first column.
      *
