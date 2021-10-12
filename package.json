@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
+  "types": "dist",
   "scripts": {
     "test": "jest",
+    "lint:types": "tsc",
     "format:check": "prettier --check .",
     "format:write": "prettier --write ."
   },

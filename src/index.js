@@ -1,7 +1,4 @@
 // TODO: Re-examine instantiation api. For MVP only support array of arrays, array of objects, object of objects.
-
-// @ts-check
-
 import { ORDER } from './types';
 
 /**
