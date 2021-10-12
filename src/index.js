@@ -220,8 +220,7 @@ export default class DataGrid {
      */
     static fromObjects(data) {
         const args = data.reduce(
-            (args, literal) => {
-                const [grid, cols] = args;
+            ([grid, cols], literal) => {
                 const headers = Object.keys(literal);
                 const values = Object.values(literal);
 
