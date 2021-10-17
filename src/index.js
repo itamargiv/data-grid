@@ -216,6 +216,21 @@ export default class DataGrid {
     }
 
     /**
+     * Returns data reduced from the grid's rows.
+     *
+     * @template {any} T
+     * @param {(acc: T, row: Row) => T} cb
+     * @param {T} initial
+     * FIXME: Typescript forced me to annotate this function as `any` rather...
+     * ... than T, as for some odd reason it expects the reduce function to...
+     * ... only return the same type as an element of the array.
+     * @returns {any}
+     */
+    reduce(cb, initial) {
+        return this.data.reduce(cb, initial);
+    }
+
+    /**
      * Instantiates a data grid from a two dimensional array
      *
      * @param {any[][]} data A two dimensional array containing values per row

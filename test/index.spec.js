@@ -241,6 +241,24 @@ describe('DataGrid', () => {
         expect(mapped.data).toEqual(grid.data.map(callback));
     });
 
-    test.todo('reduces grid rows');
+    it('reduces grid rows', () => {
+        const fakeData = [
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
+        ];
+
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
+
+        const callback = (acc, row) => acc + row.number;
+
+        expect(grid.reduce(callback)).toEqual(grid.data.reduce(callback));
+    });
+
     test.todo('retrieves filtered data by callback');
 });
