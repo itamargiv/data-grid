@@ -283,5 +283,22 @@ describe('DataGrid', () => {
         );
     });
 
-    test.todo('retrieves filtered data by callback');
+    it('retrieves filtered data by callback', () => {
+        const fakeData = [
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
+        ];
+
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
+
+        const callback = (row) => row.isBoopy;
+
+        expect(grid.filter(callback)).toEqual(grid.data.filter(callback));
+    });
 });

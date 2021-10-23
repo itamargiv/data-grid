@@ -148,6 +148,17 @@ export default class DataGrid {
     }
 
     /**
+     * Retrieves grid data, filtered by a callback.
+     *
+     * @param {(row: Row) => boolean} cb A callback to determine whether to keep
+     *                                   the item in the filtered array.
+     * @returns {Row[]}
+     */
+    filter(cb) {
+        return this.data.filter(cb);
+    }
+
+    /**
      * Retrieves data from a particular cell in the grid.
      *
      * @param {number} r A row index in the grid to retrieve the row from
