@@ -7,8 +7,9 @@
   "scripts": {
     "test": "jest",
     "build:types": "tsc",
-    "format:check": "prettier --check .",
-    "format:write": "prettier --write ."
+    "format": "prettier --write .",
+    "prepare": "husky install",
+    "commit": "commit"
   },
   "keywords": [],
   "author": "",
@@ -17,10 +18,20 @@
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-typescript": "^7.15.0",
+    "@commitlint/cli": "^13.2.1",
+    "@commitlint/config-conventional": "^13.2.0",
+    "@commitlint/prompt-cli": "^13.2.1",
     "@types/jest": "^27.0.1",
     "babel-jest": "^27.2.1",
+    "cspell": "^5.12.3",
+    "husky": "^7.0.0",
     "jest": "^27.2.0",
+    "lint-staged": "^11.2.4",
     "prettier": "^2.4.1",
     "typescript": "^4.4.3"
+  },
+  "lint-staged": {
+    "*.{js,css,md,json}": "prettier --check",
+    "*": "cspell"
   }
 }

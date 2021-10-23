@@ -1,14 +1,12 @@
 {
-    "include": [
-        "src/**/*"
-    ],
-    "compilerOptions": {
-        "checkJs": true,
-        "allowJs": true,
-        "emitDeclarationOnly": true,
-        "declaration": true,
-        "outDir": "./dist",
-        "moduleResolution": "Node",
-        "target": "ES6"
-    }
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "moduleResolution": "Node",
+    "target": "ES6"
+  }
 }

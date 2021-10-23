@@ -1,7 +1,7 @@
 export enum Order {
     ASC = 'asc',
     DESC = 'desc',
-};
+}
 
 /** @enum {Order} */
 export const ORDER = {
