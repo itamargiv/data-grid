@@ -1,4 +1,9 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Check Formatting
 npm run format:check
+
+# Check spelling in changed files
+files=$(git diff --cached --name-only)
+exec npx cspell -- --no-summary $files
