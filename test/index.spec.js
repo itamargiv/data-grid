@@ -243,6 +243,8 @@ describe('DataGrid', () => {
         expect(mapped.data).toEqual(grid.data.map(callback));
     });
 
+    test.todo('maps grid columns');
+
     it('reduces grid rows', () => {
         const fakeData = [
             ['Hello World', 42, true],
@@ -282,6 +284,8 @@ describe('DataGrid', () => {
             grid.data.slice(1).reduce(callback, fakeData[0][0])
         );
     });
+
+    test.todo('reduces specified column');
 
     it('retrieves filtered data by callback', () => {
         const fakeData = [
