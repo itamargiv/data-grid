@@ -7,8 +7,7 @@
   "scripts": {
     "test": "jest",
     "build:types": "tsc",
-    "format:check": "prettier --check .",
-    "format:write": "prettier --write .",
+    "format": "prettier --write .",
     "prepare": "husky install",
     "commit": "commit"
   },

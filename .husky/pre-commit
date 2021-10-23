@@ -6,4 +6,4 @@ npx lint-staged
 
 # Check spelling in changed files
 files=$(git diff --cached --name-only)
-exec npx cspell -- --no-summary $files
+#exec npx cspell -- --no-summary $files
