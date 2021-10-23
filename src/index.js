@@ -216,18 +216,30 @@ export default class DataGrid {
     }
 
     /**
-     * Returns data reduced from the grid's rows.
+     * Returns data reduced from the grid's rows. When no initial value is
+     * provided, the callback will receive the first value of the first column
+     * as it's initial accumulator value.
      *
      * @template {any} T
-     * @param {(acc: T, row: Row) => T} cb
+     *
+     * @param {(acc: T, row: Row) => T} cb A callback
      * @param {T} initial
-     * FIXME: Typescript forced me to annotate this function as `any` rather...
-     * ... than T, as for some odd reason it expects the reduce function to...
-     * ... only return the same type as an element of the array.
-     * @returns {any}
+     * @returns {T}
      */
-    reduce(cb, initial) {
-        return this.data.reduce(cb, initial);
+    reduce(cb, initial = null) {
+        // FIXME: Typescript forced me to annotate this as `Object[]`, as for
+        //        some odd reason it expects the reduce function to only return
+        //        `Row` when annotated as `Row[]`.
+        /**
+         * @type Object[]
+         */
+        const data = this.data;
+
+        if (initial !== null) {
+            return data.reduce(cb, initial);
+        }
+
+        return data.slice(1).reduce(cb, this.#grid[0].get(this.#columns[0]));
     }
 
     /**

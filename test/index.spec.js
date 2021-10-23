@@ -257,7 +257,28 @@ describe('DataGrid', () => {
 
         const callback = (acc, row) => acc + row.number;
 
-        expect(grid.reduce(callback)).toEqual(grid.data.reduce(callback));
+        expect(grid.reduce(callback, 0)).toEqual(grid.data.reduce(callback, 0));
+    });
+
+    it('reduces from implied initial value of first row and first column', () => {
+        const fakeData = [
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
+        ];
+
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
+
+        const callback = (acc, row) => `${row.phrase}, ${acc}`;
+
+        expect(grid.reduce(callback)).toEqual(
+            grid.data.slice(1).reduce(callback, fakeData[0][0])
+        );
     });
 
     test.todo('retrieves filtered data by callback');

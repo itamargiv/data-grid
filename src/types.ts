@@ -17,7 +17,3 @@ export type Keyed<T> = Pair<Index, T>;
 export interface Row {
     [key: Index]: any;
 }
-
-export interface Array<Row> {
-    reduce(cb: (a: any, e: Row) => any, init: any): any;
-}
