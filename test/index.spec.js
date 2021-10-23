@@ -1,10 +1,23 @@
-const DataGrid = require('../src');
+import DataGrid from '../src';
 
 describe('DataGrid', () => {
     it('instantiates', () => {
         const grid = new DataGrid();
 
         expect(grid instanceof DataGrid).toBe(true);
+    });
+
+    it('instantiates from array of object literals', () => {
+        const fakeData = [
+            {
+                phrase: 'Hello World',
+                number: 42,
+            },
+        ];
+
+        const grid = new DataGrid(fakeData);
+
+        expect(grid.data).toEqual(fakeData);
     });
 
     it('instantiates from an array of arrays', () => {
@@ -25,63 +38,37 @@ describe('DataGrid', () => {
             )
         );
 
-        const grid = new DataGrid(fakeData);
+        const grid = DataGrid.fromArray(fakeData);
 
         expect(grid.data).toEqual(expected);
     });
 
-    it('instantiates from an array of pair arrays', () => {
+    test.todo('instantiates from object of objects');
+
+    it('instantiates from an array of arrays with column names', () => {
         const fakeData = [
-            [
-                ['phrase', 'Hello World'],
-                ['number', 42],
-            ],
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
         ];
 
-        const grid = DataGrid.fromPairs(fakeData);
+        const fakeColumns = ['phrase', 'number', 'isBoopy'];
 
-        expect(grid.data).toEqual([
-            {
-                phrase: 'Hello World',
-                number: 42,
-            },
-        ]);
+        const expected = fakeData.map((row) =>
+            row.reduce(
+                (literal, value, i) => ({
+                    ...literal,
+                    [fakeColumns[i]]: value,
+                }),
+                {}
+            )
+        );
+
+        const grid = DataGrid.fromArray(fakeData, fakeColumns);
+
+        expect(grid.data).toEqual(expected);
     });
-
-    it('instantiates from array of object literals', () => {
-        const fakeData = [
-            {
-                phrase: 'Hello World',
-                number: 42,
-            },
-        ];
-
-        const grid = DataGrid.fromObjects(fakeData);
-
-        expect(grid.data).toEqual(fakeData);
-    });
-
-    it('instantiates from array of Map instances', () => {
-        const fakeRow = [
-            ['phrase', 'Hello World'],
-            ['number', 42],
-        ];
-
-        const expectedData = [
-            {
-                phrase: 'Hello World',
-                number: 42,
-            },
-        ];
-
-        const grid = DataGrid.fromMaps([new Map(fakeRow)]);
-
-        expect(grid.data).toEqual(expectedData);
-    });
-
-    test.todo('instantiates from a tuple array of tuple arrays');
-    test.todo('instantiates from an object literal of object literals');
-    test.todo('instantiates from a Map of Map instances');
 
     it('retrieves row as object literal', () => {
         const fakeData = [['Hello World', 42]];
@@ -91,7 +78,7 @@ describe('DataGrid', () => {
             number: 42,
         };
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number']);
+        const grid = DataGrid.fromArray(fakeData, ['phrase', 'number']);
 
         expect(grid.row(0)).toEqual(expected);
     });
@@ -104,7 +91,7 @@ describe('DataGrid', () => {
 
         const expected = ['Hello World', 'Goodbye Mars'];
 
-        const grid = new DataGrid(fakeData, ['phrase']);
+        const grid = DataGrid.fromArray(fakeData, ['phrase']);
 
         expect(grid.col('phrase')).toEqual(expected);
     });
@@ -115,7 +102,7 @@ describe('DataGrid', () => {
             ['Goodbye Mars', 1986],
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number']);
+        const grid = DataGrid.fromArray(fakeData, ['phrase', 'number']);
 
         expect(grid.get(1, 'phrase')).toEqual('Goodbye Mars');
     });
@@ -128,10 +115,15 @@ describe('DataGrid', () => {
             ['Bonjour Mercury', 35, true],
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
         const callback = (a, b) => a.phrase.localeCompare(b.phrase);
+        const sorted = grid.sort();
 
-        expect(grid.sort()).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data descending', () => {
@@ -142,10 +134,15 @@ describe('DataGrid', () => {
             ['Bonjour Mercury', 35, true],
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
         const callback = (a, b) => -a.phrase.localeCompare(b.phrase);
+        const sorted = grid.sort('desc');
 
-        expect(grid.sort('desc')).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data with callback', () => {
@@ -156,10 +153,15 @@ describe('DataGrid', () => {
             ['Bonjour Mercury', 35, true],
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
         const callback = (a, b) => a.number - b.number;
+        const sorted = grid.sortWith(callback);
 
-        expect(grid.sortWith(callback)).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data by column', () => {
@@ -170,10 +172,15 @@ describe('DataGrid', () => {
             ['Bonjour Mercury', 35, true],
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
         const callback = (a, b) => a.number - b.number;
+        const sorted = grid.sortBy('number');
 
-        expect(grid.sortBy('number')).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data by column descending', () => {
@@ -184,10 +191,15 @@ describe('DataGrid', () => {
             ['Bonjour Mercury', 35, true],
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
         const callback = (a, b) => -(a.number - b.number);
+        const sorted = grid.sortBy('number', 'desc');
 
-        expect(grid.sortBy('number', 'desc')).toEqual(grid.data.sort(callback));
+        expect(sorted.data).toEqual(grid.data.sort(callback));
     });
 
     it('sorts data by column with callback', () => {
@@ -198,15 +210,99 @@ describe('DataGrid', () => {
             ['Bonjour Mercury', 35, true],
         ];
 
-        const grid = new DataGrid(fakeData, ['phrase', 'number', 'isBoopy']);
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
         const callback = (a, b) => -(a.isBoopy - b.isBoopy);
+        const sorted = grid.sortByWith('isBoopy', (a, b) => -(a - b));
 
-        expect(grid.sortByWith('isBoopy', (a, b) => -(a - b))).toEqual(
-            grid.data.sort(callback)
+        expect(sorted.data).toEqual(grid.data.sort(callback));
+    });
+
+    it('maps grid rows', () => {
+        const fakeData = [
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
+        ];
+
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
+        const callback = (row) => ({
+            ...row,
+            phrase: row.phrase + '!',
+        });
+        const mapped = grid.map(callback);
+
+        expect(mapped.data).toEqual(grid.data.map(callback));
+    });
+
+    test.todo('maps grid columns');
+
+    it('reduces grid rows', () => {
+        const fakeData = [
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
+        ];
+
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
+
+        const callback = (acc, row) => acc + row.number;
+
+        expect(grid.reduce(callback, 0)).toEqual(grid.data.reduce(callback, 0));
+    });
+
+    it('reduces from implied initial value of first row and first column', () => {
+        const fakeData = [
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
+        ];
+
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
+
+        const callback = (acc, row) => `${row.phrase}, ${acc}`;
+
+        expect(grid.reduce(callback)).toEqual(
+            grid.data.slice(1).reduce(callback, fakeData[0][0])
         );
     });
 
-    test.todo('maps grid rows');
-    test.todo('reduces grid rows');
-    test.todo('retrieves filtered data by callback');
+    test.todo('reduces specified column');
+
+    it('retrieves filtered data by callback', () => {
+        const fakeData = [
+            ['Hello World', 42, true],
+            ['Goodbye Mars', 1986, false],
+            ['So Long Venus', 1984, false],
+            ['Bonjour Mercury', 35, true],
+        ];
+
+        const grid = DataGrid.fromArray(fakeData, [
+            'phrase',
+            'number',
+            'isBoopy',
+        ]);
+
+        const callback = (row) => row.isBoopy;
+
+        expect(grid.filter(callback)).toEqual(grid.data.filter(callback));
+    });
 });
