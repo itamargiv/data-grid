@@ -2,3 +2,15 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npx --no-install commitlint --edit "$1"
+
+if ! type aspell > /dev/null; then
+  echo "Warning: aspell is not installed"
+  exit
+fi
+
+words="$(grep -v '^#' "$1" | aspell list)"
+if [ -n "$words" ]; then
+  echo "\n\e[1;33mWarning: Possible spelling errors found in commit message:\e[0m"
+  echo "\e[0;31m$words\e[0m" | sed 's/^/  /'
+  echo "\e[1;33mUse git commit --amend to change the message.\e[0m\n"
+fi
