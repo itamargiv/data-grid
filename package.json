@@ -6,7 +6,7 @@
   "types": "dist",
   "scripts": {
     "test": "jest",
-    "lint:types": "tsc",
+    "build:types": "tsc",
     "format:check": "prettier --check .",
     "format:write": "prettier --write ."
   },

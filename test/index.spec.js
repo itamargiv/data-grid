@@ -43,6 +43,8 @@ describe('DataGrid', () => {
         expect(grid.data).toEqual(expected);
     });
 
+    test.todo('instantiates from object of objects');
+
     it('instantiates from an array of arrays with column names', () => {
         const fakeData = [
             ['Hello World', 42, true],

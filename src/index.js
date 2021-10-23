@@ -1,4 +1,3 @@
-// TODO: Re-examine instantiation api. For MVP only support array of arrays, array of objects, object of objects.
 import { ORDER } from './types';
 
 /**
@@ -103,7 +102,8 @@ export default class DataGrid {
         });
     }
 
-    // TODO: Find a way to represent internal data of grid in a similar fashion  to valueOf
+    // TODO: Find a way to represent internal data of grid in a similar fashion
+    //       to `valueOf`
     /**
      * @returns {Row[]}
      */
@@ -222,8 +222,8 @@ export default class DataGrid {
      *
      * @template {any} T
      *
-     * @param {(acc: T, row: Row) => T} cb A callback
-     * @param {T} initial
+     * @param {(acc: T, row: Row) => T} cb A callback to reduce array values.
+     * @param {T} initial An initial value to start reducing from.
      * @returns {T}
      */
     reduce(cb, initial = null) {
@@ -248,7 +248,7 @@ export default class DataGrid {
      * @param {any[][]} data A two dimensional array containing values per row
      * @param {Index[]} columns An array of column headers
      */
-    static fromArray(data = [], columns = []) {
+    static fromArray(data, columns = []) {
         const args = data.map((row) =>
             row.reduce(
                 (literal, value, i) => ({
