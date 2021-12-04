@@ -15,5 +15,5 @@ type Pair<a, b> = readonly [a, b];
 export type Keyed<T> = Pair<Index, T>;
 
 export interface Row {
-    [key: Index]: any;
+    [key: Index]: unknown;
 }
