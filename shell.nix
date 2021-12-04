@@ -3,8 +3,5 @@
 }:
 
 pkgs.mkShell {
-	buildInputs = [
-		pkgs.git
-		pkgs.nodejs-16_x
-	];
+	buildInputs = [ pkgs.nodejs-16_x ];
 }
