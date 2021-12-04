@@ -1,4 +1,11 @@
 {
-  "ignorePaths": ["coverage", "dist", "package*.json", "*.config.js"],
+  "ignorePaths": [
+    "coverage",
+    "dist",
+    "nix",
+    "package*.json",
+    "*.config.js",
+    "*.nix"
+  ],
   "words": ["Itamar", "Givon", "Boopy"]
 }
