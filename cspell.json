@@ -5,6 +5,7 @@
     "nix",
     "package*.json",
     "*.config.js",
+    "*.config.json",
     "*.nix"
   ],
   "words": ["Itamar", "Givon", "Boopy"]

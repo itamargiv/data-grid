@@ -6,6 +6,7 @@
   "types": "dist",
   "scripts": {
     "test": "jest",
+    "build:targets": "babel src/ -d dist/",
     "build:types": "tsc",
     "format": "prettier --write .",
     "lint": "eslint .",
@@ -16,8 +17,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/preset-env": "^7.15.6",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.15.0",
     "@commitlint/cli": "^14.1.0",
     "@commitlint/config-conventional": "^14.1.0",
