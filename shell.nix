@@ -3,5 +3,8 @@
 }:
 
 pkgs.mkShell {
-	buildInputs = [ pkgs.nodejs-16_x ];
+	buildInputs = [
+		pkgs.nodejs-16_x
+		pkgs.act
+	];
 }
