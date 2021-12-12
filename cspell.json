@@ -1,5 +1,6 @@
 {
   "ignorePaths": [
+    ".github",
     "coverage",
     "dist",
     "nix",

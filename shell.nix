@@ -6,5 +6,6 @@ pkgs.mkShell {
 	buildInputs = [
 		pkgs.nodejs-16_x
 		pkgs.act
+		pkgs.cachix
 	];
 }
